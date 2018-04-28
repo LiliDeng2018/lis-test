@@ -30,9 +30,7 @@ from utils.cmdshell import WinRMClient
 from utils.setup import SetupTestEnv
 
 from report.db_utils import upload_results
-from report.results_parser import OrionLogsReader, SysbenchLogsReader, MemcachedLogsReader,\
-    RedisLogsReader, ApacheLogsReader, MariadbLogsReader, MongodbLogsReader, ZookeeperLogsReader,\
-    TerasortLogsReader, SQLServerLogsReader, PostgreSQLLogsReader
+from report.results_parser import *
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s',
                     datefmt='%y/%m/%d %H:%M:%S', level=logging.INFO)
