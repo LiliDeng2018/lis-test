@@ -1025,15 +1025,19 @@ def test_elasticsearch(provider, keyid, secret, token, imageid, subscription, te
                             instancetype=instancetype, user=user,
                             localpath=localpath, region=region,
                             zone=zone, sriov=sriov, kernel=kernel)
-    test_cmd = '/tmp/run_elasticsearch.sh {} '.format(user)
     current_path = os.getcwd()
     results_path = os.path.join(localpath, 'elasticsearch{}_{}_{}.zip'.format(str(time.time()), instancetype, sriov))
     test_env.ssh_client[1].put_file(os.path.join(current_path, 'tests', 'install_elasticsearch.sh'), '/tmp/install_elasticsearch.sh')
     test_env.ssh_client[1].run('chmod +x /tmp/install_elasticsearch.sh')
     test_env.ssh_client[1].run('/tmp/install_elasticsearch.sh {} {}'.format(user, test_env.device))
-    test_env.ssh_client[1].connect()
-    test_env.run_test_front(ssh_vm_conf=1, testname='elasticsearch', test_cmd=test_cmd,
-                      results_path=results_path, timeout=constants.TIMEOUT * 2)
+    tracks = ["pmc", "geonames", "nested", "geopoint", "http_logs", "noaa", "nyc_taxis", "percolator"]
+    for track in tracks:
+        test_env.ssh_client[1].connect()
+        test_cmd = "nohup esrally --distribution-version=6.2.2 --track {} &".format(track)
+        test_env.run_test_nohup(ssh_vm_conf=1, test_cmd=test_cmd, timeout=constants.TIMEOUT, track=track)
+    test_cmd = '/tmp/run_elasticsearch.sh {} '.format(user)
+    test_env.run_test(ssh_vm_conf=1, testname='elasticsearch', test_cmd=test_cmd,
+                      results_path=results_path, timeout=constants.TIMEOUT)
     upload_results(localpath=localpath, table_name='Perf_{}_Elasticsearch'.format(provider),
                     results_path=results_path, parser=ElasticsearchLogsReader,
                     test_case_name='{}_elasticsearch_perf'.format(provider),

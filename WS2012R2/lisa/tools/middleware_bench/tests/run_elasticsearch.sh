@@ -39,23 +39,6 @@ then
 fi
 
 LogMsg "ulimit value : `ulimit -n`"
-LogMsg "esrally --distribution-version=6.2.2 --track pmc"
-esrally --distribution-version=6.2.2 --track pmc
-LogMsg "esrally --distribution-version=6.2.2 --track geonames"
-esrally --distribution-version=6.2.2 --track geonames
-LogMsg "esrally --distribution-version=6.2.2 --track nested"
-esrally --distribution-version=6.2.2 --track nested
-LogMsg "esrally --distribution-version=6.2.2 --track geopoint"
-esrally --distribution-version=6.2.2 --track geopoint
-LogMsg "esrally --distribution-version=6.2.2 --track http_logs"
-esrally --distribution-version=6.2.2 --track http_logs
-LogMsg "esrally --distribution-version=6.2.2 --track noaa"
-esrally --distribution-version=6.2.2 --track noaa
-LogMsg "esrally --distribution-version=6.2.2 --track nyc_taxis"
-esrally --distribution-version=6.2.2 --track nyc_taxis
-LogMsg "esrally --distribution-version=6.2.2 --track percolator"
-esrally --distribution-version=6.2.2 --track percolator
-
 LogMsg "Kernel Version : `uname -r`"
 LogMsg "Guest OS : ${distro}"
 

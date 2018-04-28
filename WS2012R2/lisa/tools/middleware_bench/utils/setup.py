@@ -328,8 +328,7 @@ class SetupTestEnv:
         else:
             raise Exception('Timeout waiting for process to end.'.format(timeout))
 
-    def run_test_front(self, ssh_vm_conf=0, testname=None, test_cmd=None, results_path=None, raid=False,
-                 ssh_raid=1, timeout=constants.TIMEOUT):
+    def run_test_nohup(self, ssh_vm_conf=0, test_cmd=None, timeout=constants.TIMEOUT, track=None):
         try:
             if all(client is not None for client in self.ssh_client.values()):
                 current_path = os.path.dirname(sys.modules['__main__'].__file__)
@@ -339,24 +338,31 @@ class SetupTestEnv:
                                                              self.connector.key_name + '.pem'),
                                                 '/home/{}/.ssh/id_rsa'.format(self.user))
                     self.ssh_client[i].run('chmod 0600 /home/{0}/.ssh/id_rsa'.format(self.user))
-                if raid:
-                    self.ssh_client[ssh_raid].put_file(os.path.join(
-                            current_path, 'tests', 'raid.sh'), '/tmp/raid.sh')
-                    self.ssh_client[ssh_raid].run('chmod +x /tmp/raid.sh')
-                    self.ssh_client[ssh_raid].run("sed -i 's/\r//' /tmp/raid.sh")
-                    self.ssh_client[ssh_raid].run('/tmp/raid.sh 0 {} {}'.format(raid, ' '.join(
-                            self.device)))
-                bash_testname = 'run_{}.sh'.format(testname)
-                self.ssh_client[1].put_file(os.path.join(current_path, 'tests', bash_testname),
-                                            '/tmp/{}'.format(bash_testname))
-                self.ssh_client[1].run('chmod +x /tmp/{}'.format(bash_testname))
-                self.ssh_client[1].run("sed -i 's/\r//' /tmp/{}".format(bash_testname))
-                log.info('Starting run command {}'.format(test_cmd))
+                log.info('Starting run nohup command {}'.format(test_cmd))
                 self.ssh_client[1].run(test_cmd)
-                self.ssh_client[1].get_file('/tmp/{}.zip'.format(testname), results_path)
+                self._wait_for_command(self.ssh_client[1], track, pid, timeout=timeout)
         except Exception as e:
             log.exception(e)
             raise
         finally:
             if self.connector:
                 self.connector.teardown()
+
+    @staticmethod
+    def _wait_for_command(ssh_client, track, timeout=constants.TIMEOUT):
+        t = 0
+        while t < timeout:
+            try:
+                p_count  = ssh_client.run(
+                        "ps aux | grep -v grep | grep {} | awk '{{print $2}}' | wc -l".format(
+                                track))
+                if int(p_count) == 0 :
+                    return
+            except NoValidConnectionsError:
+                log.debug('NoValidConnectionsError, will retry in 60 seconds')
+                time.sleep(60)
+                t += 60
+            time.sleep(60)
+            t += 60
+        else:
+            raise Exception('Timeout waiting for process to end.'.format(timeout))
