@@ -353,7 +353,7 @@ class SetupTestEnv:
         t = 0
         while t < timeout:
             try:
-                p_count  = ssh_client.run(
+                _, p_count, _  = ssh_client.run(
                         "ps aux | grep -v grep | grep {} | awk '{{print $2}}' | wc -l".format(
                                 track))
                 if int(p_count) == 0 :
