@@ -345,8 +345,7 @@ class SetupTestEnv:
             log.exception(e)
             raise
         finally:
-            if self.connector:
-                self.connector.teardown()
+            log.info('Finish to run nohup command {}'.format(test_cmd))
 
     @staticmethod
     def _wait_for_command(ssh_client, track, timeout=constants.TIMEOUT):
