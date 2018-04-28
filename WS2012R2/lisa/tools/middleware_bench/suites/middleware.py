@@ -1033,7 +1033,7 @@ def test_elasticsearch(provider, keyid, secret, token, imageid, subscription, te
     tracks = ["pmc", "geonames", "nested", "geopoint", "http_logs", "noaa", "nyc_taxis", "percolator"]
     for track in tracks:
         test_env.ssh_client[1].connect()
-        test_cmd = "nohup esrally --distribution-version=6.2.2 --track {} &".format(track)
+        test_cmd = "nohup esrally --distribution-version=6.2.2 --track {} >/dev/null 2>&1 &".format(track)
         test_env.run_test_nohup(ssh_vm_conf=1, test_cmd=test_cmd, timeout=constants.TIMEOUT, track=track)
     test_cmd = '/tmp/run_elasticsearch.sh {} '.format(user)
     test_env.run_test(ssh_vm_conf=1, testname='elasticsearch', test_cmd=test_cmd,

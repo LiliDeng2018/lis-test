@@ -340,7 +340,7 @@ class SetupTestEnv:
                     self.ssh_client[i].run('chmod 0600 /home/{0}/.ssh/id_rsa'.format(self.user))
                 log.info('Starting run nohup command {}'.format(test_cmd))
                 self.ssh_client[1].run(test_cmd)
-                self._wait_for_command(self.ssh_client[1], track, pid, timeout=timeout)
+                self._wait_for_command(self.ssh_client[1], track, timeout=timeout)
         except Exception as e:
             log.exception(e)
             raise
