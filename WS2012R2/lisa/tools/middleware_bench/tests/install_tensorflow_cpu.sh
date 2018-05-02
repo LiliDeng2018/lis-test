@@ -23,22 +23,34 @@
 mkdir -p /tmp/tensorflow_cpu
 sudo mkdir -p /opt/tensorflow_cpu
 sudo chmod a+rwxt /opt/tensorflow_cpu
-sudo apt-get update
-sudo DEBIAN_FRONTEND='noninteractive' /usr/bin/apt-get -y install python
+
+distro="$(head -1 /etc/issue)"
+if [[ ${distro} == *"Ubuntu"* ]]
+then
+    sudo apt-get update
+    sudo DEBIAN_FRONTEND='noninteractive' /usr/bin/apt-get -y install python
+    sudo DEBIAN_FRONTEND='noninteractive' /usr/bin/apt-get -y install lsb-release
+    sudo apt-get -y install pciutils
+    sudo DEBIAN_FRONTEND='noninteractive' /usr/bin/apt-get -y install python-pip
+    sudo /usr/bin/apt-get -y install git
+elif [[ ${distro} == *"Amazon"* ]]
+then
+    #Amazon Linux
+    sudo yum update -y
+    sudo yum install -y python redhat-lsb-core python-pip git
+else
+    echo "Unsupported distribution: ${distro}."
+fi
 
 cat /proc/sys/net/ipv4/tcp_congestion_control
 lscpu
-sudo DEBIAN_FRONTEND='noninteractive' /usr/bin/apt-get -y install lsb-release
 lsb_release -d
 uname -r
 
 #Preparing benchmark tensorflow
-sudo apt-get -y install pciutils
 lspci
-sudo DEBIAN_FRONTEND='noninteractive' /usr/bin/apt-get -y install python-pip
 sudo mkdir -p /opt/tensorflow_cpu && sudo pip freeze > /opt/tensorflow_cpu/requirements.txt
 sudo pip install --upgrade https://anaconda.org/intel/tensorflow/1.4.0/download/tensorflow-1.4.0-cp27-cp27mu-linux_x86_64.whl
-sudo /usr/bin/apt-get -y install git
 git clone https://github.com/tensorflow/benchmarks.git
 cd benchmarks && git checkout abe3c808933c85e6db1719cdb92fcbbd9eac6dec
 lspci
