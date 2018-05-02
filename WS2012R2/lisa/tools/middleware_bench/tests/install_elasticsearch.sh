@@ -28,9 +28,22 @@ USER="$1"
 DISK="$2"
 echo "${USER}  -  nofile  65536" | sudo tee -a /etc/security/limits.conf
 echo 'session required pam_limits.so' | sudo tee -a /etc/pam.d/su
-sudo apt-get update
-sudo apt-get install -y python3-pip default-jdk
-sudo pip3 install esrally
+
+distro="$(head -1 /etc/issue)"
+if [[ ${distro} == *"Ubuntu"* ]]
+then
+    sudo apt-get update
+    sudo apt-get install -y python3-pip default-jdk
+    sudo pip3 install esrally
+elif [[ ${distro} == *"Amazon"* ]]
+then
+    sudo yum install -y gcc python34.x86_64 python34-devel.x86_64 python34-setuptools.noarch git python34-pip java-1.8.0-openjdk*
+    sudo pip-3.4 install esrally
+    export PATH=$PATH:/usr/local/bin
+else
+    echo "Unsupported distribution: ${distro}."
+fi
+
 
 sudo mkfs.ext4 ${DISK}
 sudo mkdir /mnt/data
