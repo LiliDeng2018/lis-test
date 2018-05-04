@@ -51,15 +51,22 @@ then
     sudo apt-get update
     sudo DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade
     sudo apt-get upgrade -yq cuda
+
+    sudo apt-get install -y libcupti-dev
+    wget -q http://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1404/x86_64/libcudnn6_6.0.21-1+cuda8.0_amd64.deb -O /mnt/data/libcudnn6_6.0.21-1+cuda8.0_amd64.deb
+    sudo dpkg -i /mnt/data/libcudnn6_6.0.21-1+cuda8.0_amd64.deb
+    sudo DEBIAN_FRONTEND='noninteractive' /usr/bin/apt-get -y install python-pip
+    sudo DEBIAN_FRONTEND='noninteractive' /usr/bin/apt-get -y install git
+    version='cuda'
 elif [[ ${distro} == *"Amazon"* ]]
 then
     #Amazon Linux
     sudo yum update -y
-    sudo yum install -y python redhat-lsb-core python-pip git
+    sudo yum install -y python-pip git
+    version='cuda-8.0'
 else
     echo "Unsupported distribution: ${distro}."
 fi
-
 
 nvidia-smi -L
 #K80, P100, V100 support
@@ -75,21 +82,15 @@ sudo nvidia-smi --query-gpu=count --id=0 --format=csv
 sudo nvidia-smi -q -d CLOCK --id=0
 #Returns the state of autoboost and autoboost_default
 
-sudo apt-get install -y libcupti-dev
-wget -q http://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1404/x86_64/libcudnn6_6.0.21-1+cuda8.0_amd64.deb -O /mnt/data/libcudnn6_6.0.21-1+cuda8.0_amd64.deb
-sudo dpkg -i /mnt/data/libcudnn6_6.0.21-1+cuda8.0_amd64.deb
-
-sudo DEBIAN_FRONTEND='noninteractive' /usr/bin/apt-get -y install python-pip
 pip freeze > /mnt/data/tensorflow_gpu/requirements.txt
 sudo pip install --upgrade tensorflow-gpu==1.3
-sudo DEBIAN_FRONTEND='noninteractive' /usr/bin/apt-get -y install git
 
 cd /mnt/data
 git clone https://github.com/tensorflow/benchmarks.git
 cd benchmarks && git checkout abe3c808933c85e6db1719cdb92fcbbd9eac6dec
 #getconf LONG_BIT
 #lib or lib64
-echo -e "import tensorflow; print(tensorflow.__version__)" | PATH=/usr/local/cuda/bin${PATH:+:${PATH}} CUDA_HOME=/usr/local/cuda LD_LIBRARY_PATH=/usr/local/cuda/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}} python
+echo -e "import tensorflow; print(tensorflow.__version__)" | PATH=/usr/local/${version}/bin${PATH:+:${PATH}} CUDA_HOME=/usr/local/${version} LD_LIBRARY_PATH=/usr/local/${version}/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}} python
 if [ $? -ne 0 ]; then 
  echo -e "Failed to install tensorflow, please check logs for details" 
  exit 1  
