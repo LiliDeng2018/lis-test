@@ -147,7 +147,7 @@ class AWSConnector:
         if self.imageid == 'ami-79873901':
             device_map['/dev/sda1'] = BlockDeviceType(delete_on_termination = True, size = 30, volume_type = "gp2")
         else:
-            device_map['/dev/xvda'] = BlockDeviceType(delete_on_termination = True, size = 30, volume_type = "gp2")
+            device_map['/dev/xvda'] = BlockDeviceType(delete_on_termination = True, size = 75, volume_type = "gp2")
         reservation = self.vpc_conn.run_instances(self.imageid, key_name=self.key_name,
                                                   instance_type=self.instancetype,
                                                   block_device_map = device_map,
