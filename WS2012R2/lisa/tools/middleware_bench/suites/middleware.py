@@ -955,6 +955,8 @@ def test_tensorflow_gpu(provider, keyid, secret, token, imageid, subscription, t
     vm_count = 1
     disk_size = 0
     if provider == constants.AWS:
+        if imageid == 'ami-f2d3638a':
+            imageid = 'ami-f0bed688'
         instancetype = 'p2.xlarge'
         disk_size = 100
     elif provider == constants.AZURE:

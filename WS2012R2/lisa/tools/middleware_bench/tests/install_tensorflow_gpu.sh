@@ -30,25 +30,37 @@ sudo mount ${DISK} /mnt/data/
 mkdir -p /tmp/tensorflow_gpu
 sudo mkdir -p /mnt/data/tensorflow_gpu
 sudo chmod a+rwxt /mnt/data/tensorflow_gpu
-sudo apt-get update
-sudo DEBIAN_FRONTEND='noninteractive' /usr/bin/apt-get -y install python
-sudo DEBIAN_FRONTEND='noninteractive' /usr/bin/apt-get -y install pciutils
-sudo DEBIAN_FRONTEND='noninteractive' /usr/bin/apt-get -y install build-essential git libtool autoconf automake
-sudo DEBIAN_FRONTEND='noninteractive' /usr/bin/apt-get -y install wget
-
 sudo chown -R ${USER}:${USER} /mnt/data/
 
-wget -q https://developer.nvidia.com/compute/cuda/8.0/Prod2/local_installers/cuda-repo-ubuntu1604-8-0-local-ga2_8.0.61-1_amd64-deb -O /mnt/data/cuda-repo-ubuntu1604-8-0-local-ga2_8.0.61-1_amd64-deb.deb
-sudo dpkg -i /mnt/data/cuda-repo-ubuntu1604-8-0-local-ga2_8.0.61-1_amd64-deb.deb
-sudo apt-get update
-sudo apt-get install -y cuda
+distro="$(head -1 /etc/issue)"
+if [[ ${distro} == *"Ubuntu"* ]]
+then
+    sudo apt-get update
+    sudo DEBIAN_FRONTEND='noninteractive' /usr/bin/apt-get -y install python
+    sudo DEBIAN_FRONTEND='noninteractive' /usr/bin/apt-get -y install pciutils
+    sudo DEBIAN_FRONTEND='noninteractive' /usr/bin/apt-get -y install build-essential git libtool autoconf automake
+    sudo DEBIAN_FRONTEND='noninteractive' /usr/bin/apt-get -y install wget
+    wget -q https://developer.nvidia.com/compute/cuda/8.0/Prod2/local_installers/cuda-repo-ubuntu1604-8-0-local-ga2_8.0.61-1_amd64-deb -O /mnt/data/cuda-repo-ubuntu1604-8-0-local-ga2_8.0.61-1_amd64-deb.deb
+    sudo dpkg -i /mnt/data/cuda-repo-ubuntu1604-8-0-local-ga2_8.0.61-1_amd64-deb.deb
+    sudo apt-get update
+    sudo apt-get install -y cuda
 
-wget -q https://developer.nvidia.com/compute/cuda/8.0/Prod2/patches/2/cuda-repo-ubuntu1604-8-0-local-cublas-performance-update_8.0.61-1_amd64-deb -O /mnt/data/cuda-repo-ubuntu1604-8-0-local-cublas-performance-update_8.0.61-1_amd64-deb.deb
-sudo dpkg -i /mnt/data/cuda-repo-ubuntu1604-8-0-local-cublas-performance-update_8.0.61-1_amd64-deb.deb
+    wget -q https://developer.nvidia.com/compute/cuda/8.0/Prod2/patches/2/cuda-repo-ubuntu1604-8-0-local-cublas-performance-update_8.0.61-1_amd64-deb -O /mnt/data/cuda-repo-ubuntu1604-8-0-local-cublas-performance-update_8.0.61-1_amd64-deb.deb
+    sudo dpkg -i /mnt/data/cuda-repo-ubuntu1604-8-0-local-cublas-performance-update_8.0.61-1_amd64-deb.deb
 
-sudo apt-get update
-sudo DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade
-sudo apt-get upgrade -yq cuda
+    sudo apt-get update
+    sudo DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade
+    sudo apt-get upgrade -yq cuda
+elif [[ ${distro} == *"Amazon"* ]]
+then
+    #Amazon Linux
+    sudo yum update -y
+    sudo yum install -y python redhat-lsb-core python-pip git
+else
+    echo "Unsupported distribution: ${distro}."
+fi
+
+
 nvidia-smi -L
 #K80, P100, V100 support
 sudo nvidia-smi -pm 1
