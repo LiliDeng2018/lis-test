@@ -83,7 +83,7 @@ sudo nvidia-smi -q -d CLOCK --id=0
 #Returns the state of autoboost and autoboost_default
 
 pip freeze > /mnt/data/tensorflow_gpu/requirements.txt
-sudo pip install --upgrade tensorflow-gpu==1.3
+pip install --upgrade tensorflow-gpu==1.3
 
 cd /mnt/data
 git clone https://github.com/tensorflow/benchmarks.git
