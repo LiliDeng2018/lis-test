@@ -37,12 +37,6 @@ distro="$(head -1 /etc/issue)"
 if [[ ${distro} == *"Ubuntu"* ]]
 then
     sudo apt -y install zip >> ${LOG_FILE}
-    version='cuda'
-elif [[ ${distro} == *"Amazon"* ]]
-then
-    version='cuda-8.0'
-else
-    echo "Unsupported distribution: ${distro}."
 fi
 
 LogMsg "Install tensorflow"
@@ -69,7 +63,7 @@ do
         LogMsg "Run tensorflow --batch_size=${size} --model=${mode} --data_name=imagenet  --device=gpu"
         uuid=$(uuidgen)
         SECONDS=0
-        nohup python /tmp/tensorflow_gpu/execute_command.py --stdout /tmp/tensorflow_gpu/cmd${uuid}.stdout --stderr /tmp/tensorflow_gpu/cmd${uuid}.stderr --status /tmp/tensorflow_gpu/cmd${uuid}.status --command 'cd /mnt/data/benchmarks/scripts/tf_cnn_benchmarks;PATH=/usr/local/'"${version}"'/bin${PATH:+:${PATH}} CUDA_HOME=/usr/local/'"${version}"' LD_LIBRARY_PATH=/usr/local/'"${version}"'/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}} python tf_cnn_benchmarks.py --local_parameter_device=cpu --batch_size='"${size}"' --model='"${mode}"' --data_name=imagenet --variable_update=parameter_server --distortions=True --device=gpu --data_format=NCHW --forward_only=False --use_fp16=False --num_gpus='"${gpucount}"'' 1> /tmp/tensorflow_gpu/cmd${uuid}.log 2>&1 &
+        nohup python /tmp/tensorflow_gpu/execute_command.py --stdout /tmp/tensorflow_gpu/cmd${uuid}.stdout --stderr /tmp/tensorflow_gpu/cmd${uuid}.stderr --status /tmp/tensorflow_gpu/cmd${uuid}.status --command 'cd /mnt/data/benchmarks/scripts/tf_cnn_benchmarks;PATH=/usr/local/cuda/bin${PATH:+:${PATH}} CUDA_HOME=/usr/local/cuda LD_LIBRARY_PATH=/usr/local/cuda/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}} python tf_cnn_benchmarks.py --local_parameter_device=cpu --batch_size='"${size}"' --model='"${mode}"' --data_name=imagenet --variable_update=parameter_server --distortions=True --device=gpu --data_format=NCHW --forward_only=False --use_fp16=False --num_gpus='"${gpucount}"'' 1> /tmp/tensorflow_gpu/cmd${uuid}.log 2>&1 &
 
         python /tmp/tensorflow_gpu/wait_for_command.py --status /tmp/tensorflow_gpu/cmd${uuid}.status
         echo "RuntimeSec: ${SECONDS}" >> /tmp/tensorflow_gpu/cmd${uuid}.stdout

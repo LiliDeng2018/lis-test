@@ -57,13 +57,12 @@ then
     sudo dpkg -i /mnt/data/libcudnn6_6.0.21-1+cuda8.0_amd64.deb
     sudo DEBIAN_FRONTEND='noninteractive' /usr/bin/apt-get -y install python-pip
     sudo DEBIAN_FRONTEND='noninteractive' /usr/bin/apt-get -y install git
-    version='cuda'
 elif [[ ${distro} == *"Amazon"* ]]
 then
     #Amazon Linux
     sudo yum update -y
     sudo yum install -y python-pip git
-    version='cuda-8.0'
+    sudo ln -s /usr/local/cuda-8.0/ /usr/local/cuda
 else
     echo "Unsupported distribution: ${distro}."
 fi
@@ -90,11 +89,11 @@ git clone https://github.com/tensorflow/benchmarks.git
 cd benchmarks && git checkout abe3c808933c85e6db1719cdb92fcbbd9eac6dec
 #getconf LONG_BIT
 #lib or lib64
-echo -e "import tensorflow; print(tensorflow.__version__)" | PATH=/usr/local/${version}/bin${PATH:+:${PATH}} CUDA_HOME=/usr/local/${version} LD_LIBRARY_PATH=/usr/local/${version}/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}} python
+echo -e "import tensorflow; print(tensorflow.__version__)" | PATH=/usr/local/cuda/bin${PATH:+:${PATH}} CUDA_HOME=/usr/local/cuda LD_LIBRARY_PATH=/usr/local/cuda/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}} python
 if [ $? -ne 0 ]; then 
  echo -e "Failed to install tensorflow, please check logs for details" 
  exit 1  
 fi
 
-wget https://raw.githubusercontent.com/GoogleCloudPlatform/PerfKitBenchmarker/master/perfkitbenchmarker/scripts/execute_command.py -O /tmp/tensorflow_gpu/execute_command.py
+wget https://raw.githubusercontent.com/GoogleCloudPlatform/PerfKitBenchmarker/f03f7045d058af47ea32cc073420d7f4e6b653f9/perfkitbenchmarker/scripts/execute_command.py -O /tmp/tensorflow_gpu/execute_command.py
 wget https://raw.githubusercontent.com/GoogleCloudPlatform/PerfKitBenchmarker/master/perfkitbenchmarker/scripts/wait_for_command.py -O /tmp/tensorflow_gpu/wait_for_command.py
