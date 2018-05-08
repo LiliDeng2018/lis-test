@@ -62,8 +62,6 @@ then
     #Amazon Linux
     sudo yum update -y
     sudo yum install -y python-pip git
-    sudo rm -rf /usr/local/cuda
-    sudo ln -s /usr/local/cuda-8.0/ /usr/local/cuda
 else
     echo "Unsupported distribution: ${distro}."
 fi
@@ -84,6 +82,12 @@ sudo nvidia-smi -q -d CLOCK --id=0
 
 pip freeze > /mnt/data/tensorflow_gpu/requirements.txt
 pip install --upgrade tensorflow-gpu==1.3
+
+if [[ ${distro} == *"Amazon"* ]]
+then
+    sudo rm -rf /usr/local/cuda
+    sudo ln -s /usr/local/cuda-8.0/ /usr/local/cuda
+fi
 
 cd /mnt/data
 git clone https://github.com/tensorflow/benchmarks.git
