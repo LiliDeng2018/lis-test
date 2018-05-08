@@ -62,6 +62,7 @@ then
     #Amazon Linux
     sudo yum update -y
     sudo yum install -y python-pip git
+    sudo rm -rf /usr/local/cuda
     sudo ln -s /usr/local/cuda-8.0/ /usr/local/cuda
 else
     echo "Unsupported distribution: ${distro}."

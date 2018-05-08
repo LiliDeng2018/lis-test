@@ -37,8 +37,13 @@ distro="$(head -1 /etc/issue)"
 if [[ ${distro} == *"Ubuntu"* ]]
 then
     sudo apt -y install zip >> ${LOG_FILE}
+elif [[ ${distro} == *"Amazon"* ]]
+then
+    sed -i 's/import cPickle/import _pickle as cPickle/g' /mnt/data/benchmarks/scripts/tf_cnn_benchmarks/datasets.py
+else
+    echo "Unsupported distribution: ${distro}."
 fi
-sleep 100000000
+
 LogMsg "Install tensorflow"
 /tmp/install_tensorflow_gpu.sh ${DISK} ${USER} >> ${LOG_FILE}
 if [ $? -ne 0 ]; then 
