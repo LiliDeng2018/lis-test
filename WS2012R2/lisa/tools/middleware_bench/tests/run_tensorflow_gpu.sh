@@ -33,8 +33,12 @@ if [ -e /tmp/summary.log ]; then
     rm -rf /tmp/summary.log
 fi
 
+sleep 300
+
 LogMsg "Install tensorflow"
 /tmp/install_tensorflow_gpu.sh ${DISK} ${USER} >> ${LOG_FILE}
+
+sleep 300
 
 if [ $? -ne 0 ]; then
  echo -e "Failed to install tensorflow, please check ${LOG_FILE} for details"
