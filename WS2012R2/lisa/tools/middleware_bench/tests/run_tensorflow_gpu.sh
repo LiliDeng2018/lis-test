@@ -33,6 +33,14 @@ if [ -e /tmp/summary.log ]; then
     rm -rf /tmp/summary.log
 fi
 
+LogMsg "Install tensorflow"
+/tmp/install_tensorflow_gpu.sh ${DISK} ${USER} >> ${LOG_FILE}
+
+if [ $? -ne 0 ]; then
+ echo -e "Failed to install tensorflow, please check ${LOG_FILE} for details"
+ exit 1
+fi
+
 distro="$(head -1 /etc/issue)"
 if [[ ${distro} == *"Ubuntu"* ]]
 then
@@ -42,13 +50,6 @@ then
     sed -i 's/import cPickle/import _pickle as cPickle/g' /mnt/data/benchmarks/scripts/tf_cnn_benchmarks/datasets.py
 else
     echo "Unsupported distribution: ${distro}."
-fi
-
-LogMsg "Install tensorflow"
-/tmp/install_tensorflow_gpu.sh ${DISK} ${USER} >> ${LOG_FILE}
-if [ $? -ne 0 ]; then 
- echo -e "Failed to install tensorflow, please check ${LOG_FILE} for details" 
- exit 1  
 fi
 
 gpucount=0
