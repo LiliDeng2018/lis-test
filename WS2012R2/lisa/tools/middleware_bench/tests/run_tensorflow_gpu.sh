@@ -38,7 +38,7 @@ if [[ ${distro} == *"Ubuntu"* ]]
 then
     sudo apt -y install zip >> ${LOG_FILE}
 fi
-
+sleep 100000000
 LogMsg "Install tensorflow"
 /tmp/install_tensorflow_gpu.sh ${DISK} ${USER} >> ${LOG_FILE}
 if [ $? -ne 0 ]; then 
