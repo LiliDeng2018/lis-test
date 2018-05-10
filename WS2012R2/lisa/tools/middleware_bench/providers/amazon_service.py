@@ -171,7 +171,7 @@ class AWSConnector:
                     'Name': 'image-type',
                     'Values': ['machine']
                 } ]
-        images = self.vpc_conn.get_all_images(owners = ['self'], filters = {'name':'amzn*-ami-hvm-*'})
+        images = self.vpc_conn.get_all_images()
         for image in images:
             log.info(image['name'])
             log.info(image['id'])
