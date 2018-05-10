@@ -173,8 +173,8 @@ class AWSConnector:
                 } ]
         images = self.vpc_conn.get_all_images()
         for image in images:
-            log.info(image['name'])
-            log.info(image['id'])
+            log.info(image.name)
+            log.info(image.id)
         time.sleep(10000000000000)
         reservation = self.vpc_conn.run_instances(self.imageid, key_name=self.key_name,
                                                   instance_type=self.instancetype,
