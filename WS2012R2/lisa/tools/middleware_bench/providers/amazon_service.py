@@ -143,11 +143,38 @@ class AWSConnector:
         :param user_data: routines to be executed upon spawning the instance
         :return: EC2Instance object
         """
+        
         device_map = BlockDeviceMapping()
         if self.imageid == 'ami-79873901':
             device_map['/dev/sda1'] = BlockDeviceType(delete_on_termination = True, size = 30, volume_type = "gp2")
         else:
             device_map['/dev/xvda'] = BlockDeviceType(delete_on_termination = True, size = 75, volume_type = "gp2")
+        filters = [ {
+                    'Name': 'name',
+                    'Values': ['amzn*-ami-hvm-*']
+                },{
+                    'Name': 'description',
+                    'Values': ['Amazon Linux AMI*']
+                },{
+                    'Name': 'architecture',
+                    'Values': ['x86_64']
+                },{
+                    'Name': 'state',
+                    'Values': ['available']
+                },{
+                    'Name': 'root-device-type',
+                    'Values': ['ebs']
+                },{
+                    'Name': 'virtualization-type',
+                    'Values': ['hvm']
+                },{
+                    'Name': 'image-type',
+                    'Values': ['machine']
+                } ]
+        images = self.vpc_conn.get_all_images(image_ids=None, owners=None, executable_by=None, filters=filters, dry_run=False)
+        for image in images:
+            log.info(image['ImageId'])
+        time.sleep(10000000000000)
         reservation = self.vpc_conn.run_instances(self.imageid, key_name=self.key_name,
                                                   instance_type=self.instancetype,
                                                   block_device_map = device_map,
