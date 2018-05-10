@@ -155,7 +155,7 @@ class AWSConnector:
         #hypervisor hvm
         #Deep Learning AMI
         #
-        filters={'name':'ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server*','architecture': 'x86_64', 'platform': 'None', 'root_device_type':'ebs', 'hypervisor':'hvm', 'is-public': True}
+        filters={'architecture': 'x86_64', 'platform': 'None', 'hypervisor':'hvm', 'is-public': True}
         images = self.vpc_conn.get_all_images(filters=filters)
         for image in images:
             log.info("***************************start***************************")
