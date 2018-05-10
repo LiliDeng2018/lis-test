@@ -149,32 +149,20 @@ class AWSConnector:
             device_map['/dev/sda1'] = BlockDeviceType(delete_on_termination = True, size = 30, volume_type = "gp2")
         else:
             device_map['/dev/xvda'] = BlockDeviceType(delete_on_termination = True, size = 75, volume_type = "gp2")
-        filters = [ {
-                    'Name': 'name',
-                    'Values': ['amzn*-ami-hvm-*']
-                },{
-                    'Name': 'description',
-                    'Values': ['Amazon Linux AMI*']
-                },{
-                    'Name': 'architecture',
-                    'Values': ['x86_64']
-                },{
-                    'Name': 'state',
-                    'Values': ['available']
-                },{
-                    'Name': 'root-device-type',
-                    'Values': ['ebs']
-                },{
-                    'Name': 'virtualization-type',
-                    'Values': ['hvm']
-                },{
-                    'Name': 'image-type',
-                    'Values': ['machine']
-                } ]
         images = self.vpc_conn.get_all_images()
         for image in images:
+            log.info("***************************start***************************")
             log.info(image.name)
             log.info(image.id)
+            log.info(image.platform)
+            log.info(image.block_device_mapping)
+            log.info(image.root_device_type)
+            log.info(image.architecture)
+            log.info(image.creationDate)
+            log.info(image.hypervisor)
+            log.info(image.tags)
+            log.info("***************************end***************************")
+        log.info("get all images done")
         time.sleep(10000000000000)
         reservation = self.vpc_conn.run_instances(self.imageid, key_name=self.key_name,
                                                   instance_type=self.instancetype,
