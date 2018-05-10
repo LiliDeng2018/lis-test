@@ -171,9 +171,10 @@ class AWSConnector:
                     'Name': 'image-type',
                     'Values': ['machine']
                 } ]
-        images = self.vpc_conn.get_all_images(image_ids=None, owners=None, executable_by=None, filters=filters, dry_run=False)
+        images = self.vpc_conn.get_all_images(owners = ['self'], filters = {'name':'amzn*-ami-hvm-*'})
         for image in images:
-            log.info(image['ImageId'])
+            log.info(image['name'])
+            log.info(image['id'])
         time.sleep(10000000000000)
         reservation = self.vpc_conn.run_instances(self.imageid, key_name=self.key_name,
                                                   instance_type=self.instancetype,
