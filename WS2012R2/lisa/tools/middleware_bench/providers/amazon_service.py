@@ -155,7 +155,7 @@ class AWSConnector:
         #hypervisor hvm
         #Deep Learning AMI
         #
-        filters={'architecture': 'x86_64', 'platform': 'None', 'hypervisor':'hvm', 'is-public': True}
+        filters={'architecture': 'x86_64', 'platform': 'None', 'hypervisor':'hvm'}
         images = self.vpc_conn.get_all_images(filters=filters)
         for image in images:
             log.info("***************************start***************************")
@@ -164,7 +164,6 @@ class AWSConnector:
             log.info(image.platform)
             log.info(image.block_device_mapping)
             log.info(image.root_device_type)
-            log.info(image.architecture)
             log.info(image.creationDate)
             log.info(image.hypervisor)
             log.info("***************************end***************************")
