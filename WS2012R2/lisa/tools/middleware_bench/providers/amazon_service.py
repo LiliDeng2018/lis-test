@@ -155,18 +155,19 @@ class AWSConnector:
         #hypervisor hvm
         #Deep Learning AMI
         #
-        filters={'architecture': 'x86_64', 'platform': 'None', 'hypervisor':'hvm'}
+        filters={'architecture': 'x86_64'}
         images = self.vpc_conn.get_all_images(filters=filters)
         for image in images:
-            log.info("***************************start***************************")
-            log.info(image.name)
-            log.info(image.id)
-            log.info(image.platform)
-            log.info(image.block_device_mapping)
-            log.info(image.root_device_type)
-            log.info(image.creationDate)
-            log.info(image.hypervisor)
-            log.info("***************************end***************************")
+            if image.platform != 'windows':
+                log.info("***************************start***************************")
+                log.info(image.name)
+                log.info(image.id)
+                log.info(image.platform)
+                log.info(image.block_device_mapping)
+                log.info(image.root_device_type)
+                log.info(image.creationDate)
+                log.info(image.hypervisor)
+                log.info("***************************end***************************")
         log.info("get all images done")
         time.sleep(10000000000000)
         reservation = self.vpc_conn.run_instances(self.imageid, key_name=self.key_name,
