@@ -155,7 +155,7 @@ class AWSConnector:
         #hypervisor hvm
         #Deep Learning AMI
         #
-        filters={'architecture': 'x86_64'}
+        filters={'name':'amzn*', 'architecture': 'x86_64','root_device_type':'ebs'}
         images = self.vpc_conn.get_all_images(filters=filters)
         for image in images:
             if image.platform != 'windows':
