@@ -149,7 +149,14 @@ class AWSConnector:
             device_map['/dev/sda1'] = BlockDeviceType(delete_on_termination = True, size = 30, volume_type = "gp2")
         else:
             device_map['/dev/xvda'] = BlockDeviceType(delete_on_termination = True, size = 75, volume_type = "gp2")
-        images = self.vpc_conn.get_all_images()
+        #architecture x86_64
+        #platform None
+        #root_device_type ebs
+        #hypervisor hvm
+        #Deep Learning AMI
+        #
+        filters={'name':'ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server*','architecture': 'x86_64', 'platform': 'None', 'root_device_type':'ebs', 'hypervisor':'hvm', 'is-public': True}
+        images = self.vpc_conn.get_all_images(filters=filters)
         for image in images:
             log.info("***************************start***************************")
             log.info(image.name)
@@ -160,7 +167,6 @@ class AWSConnector:
             log.info(image.architecture)
             log.info(image.creationDate)
             log.info(image.hypervisor)
-            log.info(image.tags)
             log.info("***************************end***************************")
         log.info("get all images done")
         time.sleep(10000000000000)
