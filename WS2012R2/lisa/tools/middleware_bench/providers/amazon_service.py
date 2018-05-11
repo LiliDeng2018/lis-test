@@ -139,17 +139,34 @@ class AWSConnector:
         self.create_key_pair(self.vpc_conn)
 
     @staticmethod
-    def newest_image(list_of_images):
+    def newest_image(os_type):
+        filters = {}
+        if os_type == 'ubuntu_1604':
+            filters={'name':'ubuntu*images*hvm-ssd*16.04-amd64-server*', 'architecture': 'x86_64','root_device_type':'ebs', 'owner_id':'137112412989'}
+        elif os_type == 'amazon_linux':
+            filters={'name':'amzn-ami-hvm-*-x86_64-gp2', 'architecture': 'x86_64','root_device_type':'ebs', 'owner_id':'137112412989'}
+        elif os_type == 'amazon_linux_gpu':
+            filters={'name':'amzn-ami-hvm-*-x86_64-gp2', 'architecture': 'x86_64','root_device_type':'ebs', 'owner_id':'137112412989'}
+        else:
+            raise
+        images = self.vpc_conn.get_all_images(filters=filters)
+        filters_images = []
+        for image in images:
+            if image.platform != 'windows' and "test" not in image.name:
+                filters_images.append(image)
+                log.info("image id {}".format(image.id))
+
         latest = None
 
-        for image in list_of_images:
+        for image in filters_images:
             if not latest:
                 latest = image
                 continue
 
             if parser.parse(image.creationDate) > parser.parse(latest.creationDate):
                 latest = image
-
+        log.info("image id {}".format(latest.id))
+        log.info("image creationDate {}".format(latest.creationDate))
         return latest
 
     def create_vm(self, user_data=None):
@@ -158,7 +175,6 @@ class AWSConnector:
         :param user_data: routines to be executed upon spawning the instance
         :return: EC2Instance object
         """
-        
         device_map = BlockDeviceMapping()
         if self.imageid == 'ami-79873901':
             device_map['/dev/sda1'] = BlockDeviceType(delete_on_termination = True, size = 30, volume_type = "gp2")
@@ -170,47 +186,13 @@ class AWSConnector:
         #hypervisor hvm
         #amzn*/Deep Learning AMI/
         #
-        filters={'name':'amzn-ami-hvm-*-x86_64-gp2', 'architecture': 'x86_64','root_device_type':'ebs', 'owner_id':'137112412989'}
-        images = self.vpc_conn.get_all_images(filters=filters)
-        filters_images = []
-        for image in images:
-            if image.platform != 'windows' and "test" not in image.name:
-                filters_images.append(image)
-                log.info("***************************start***************************")
-                log.info(image.name)
-                log.info(image.id)
-                log.info(image.platform)
-                log.info(image.block_device_mapping)
-                log.info(image.root_device_type)
-                log.info(image.creationDate)
-                log.info(image.hypervisor)
-                log.info(image.owner_alias)
-                log.info(image.state)
-                log.info(image.type)
-                log.info(image.virtualization_type)
-                log.info(image.sriov_net_support)
-                log.info(image.description)
-                log.info(image.owner_id)
-                log.info(image.is_public)
-                log.info("***************************end***************************")
-        log.info("get all images done")
-        source_image = self.newest_image(filters_images)
-        log.info(source_image.name)
-        log.info(source_image.id)
-        log.info(source_image.platform)
-        log.info(source_image.block_device_mapping)
-        log.info(source_image.root_device_type)
-        log.info(source_image.creationDate)
-        log.info(source_image.hypervisor)
-        log.info(source_image.owner_alias)
-        log.info(source_image.state)
-        log.info(source_image.type)
-        log.info(source_image.virtualization_type)
-        log.info(source_image.sriov_net_support)
-        log.info(source_image.description)
-        log.info(source_image.owner_id)
-        log.info(source_image.is_public)
-        time.sleep(10000000000000)
+        #.split(":")[0].split("'")[1]
+        source_image = self.newest_image(self.imageid)
+        self.imageid = source_image.id
+
+        #root_device_name = source_image.block_device_mapping).split(":")[0].split("'")[1]
+        #device_map[root_device_name] = BlockDeviceType(delete_on_termination = True, size = 30, volume_type = "gp2")
+        time.sleep(10000000000000000000000)
         reservation = self.vpc_conn.run_instances(self.imageid, key_name=self.key_name,
                                                   instance_type=self.instancetype,
                                                   block_device_map = device_map,
