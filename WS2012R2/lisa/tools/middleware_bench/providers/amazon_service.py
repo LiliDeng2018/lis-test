@@ -156,7 +156,9 @@ class AWSConnector:
             if image.platform != 'windows' and "test" not in image.name:
                 filters_images.append(image)
                 log.info("image id {}".format(image.id))
-
+                log.info("block_device_mapping {}".format(image.block_device_mapping))
+                log.info("hypervisor {}".format(image.hypervisor))
+                log.info("name {}".format(image.name))
         latest = None
 
         for image in filters_images:
@@ -193,7 +195,7 @@ class AWSConnector:
 
         #root_device_name = source_image.block_device_mapping).split(":")[0].split("'")[1]
         #device_map[root_device_name] = BlockDeviceType(delete_on_termination = True, size = 30, volume_type = "gp2")
-        time.sleep(10000000000000000000000)
+        time.sleep(100000000000000)
         reservation = self.vpc_conn.run_instances(self.imageid, key_name=self.key_name,
                                                   instance_type=self.instancetype,
                                                   block_device_map = device_map,
