@@ -142,7 +142,8 @@ class AWSConnector:
     def newest_image(self, os_type):
         filters = {}
         if os_type == 'ubuntu_1604':
-            filters={'name':'ubuntu*images*hvm-ssd*16.04-amd64-server*', 'architecture': 'x86_64','root_device_type':'ebs', 'owner_id':'137112412989'}
+            filters={'name':'ubuntu*images*hvm-ssd*16.04*amd64*server*', 'architecture': 'x86_64','root_device_type':'ebs', 'owner_id':'137112412989'}
+            log.info("ubuntu_1604")
         elif os_type == 'amazon_linux':
             filters={'name':'amzn-ami-hvm-*-x86_64-gp2', 'architecture': 'x86_64','root_device_type':'ebs', 'owner_id':'137112412989'}
         elif os_type == 'amazon_linux_gpu':
