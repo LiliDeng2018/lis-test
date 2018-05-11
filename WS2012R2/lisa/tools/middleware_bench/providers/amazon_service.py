@@ -140,17 +140,14 @@ class AWSConnector:
 
     @staticmethod
     def newest_image(list_of_images):
-        latest = None
+        latest = list_of_images[0]
 
         for image in list_of_images:
-            if not latest:
-                latest = image
-                continue
-
             if parser.parse(image.creationDate.split("T")[0]) > parser.parse(latest.creationDate.split("T")[0]):
                 log.info('image: {}'.format(image.creationDate.split("T")[0]))
                 log.info('latest: {}'.format(latest.creationDate.split("T")[0]))
                 latest = image
+                log.info('after assign - latest: {}'.format(latest.creationDate.split("T")[0]))
 
         return latest
 
