@@ -175,7 +175,7 @@ class AWSConnector:
         filters_images = []
         for image in images:
             if image.platform != 'windows' and "test" not in image.name:
-                filters_images.add(image)
+                filters_images.append(image)
                 log.info("***************************start***************************")
                 log.info(image.name)
                 log.info(image.id)
