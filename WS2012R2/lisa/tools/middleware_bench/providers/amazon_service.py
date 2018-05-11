@@ -157,23 +157,15 @@ class AWSConnector:
         for image in images:
             if image.platform != 'windows' and "test" not in image.name:
                 filters_images.append(image)
-                log.info("image id {}".format(image.id))
-                log.info("block_device_mapping {}".format(image.block_device_mapping))
-                log.info("hypervisor {}".format(image.hypervisor))
-                log.info("name {}".format(image.name))
-                log.info("owner_id {}".format(image.owner_id))
-                log.info("root_device_name {}".format(image.root_device_name))
-        latest = None
 
+        latest = None
         for image in filters_images:
             if not latest:
                 latest = image
                 continue
-
             if parser.parse(image.creationDate) > parser.parse(latest.creationDate):
                 latest = image
-        log.info("image id {}".format(latest.id))
-        log.info("image creationDate {}".format(latest.creationDate))
+
         root_device_name = latest.root_device_name
         device_map = BlockDeviceMapping()
         if os_type == 'ubuntu_1604':

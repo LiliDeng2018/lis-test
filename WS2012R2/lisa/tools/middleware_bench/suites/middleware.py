@@ -1013,11 +1013,11 @@ def test_elasticsearch(provider, keyid, secret, token, imageid, subscription, te
     vm_count = 1
     disk_size = 0
     if provider == constants.AWS:
-        disk_size = 500
+        disk_size = 100
     elif provider == constants.AZURE:
-        disk_size = 500
+        disk_size = 513
     elif provider == constants.GCE:
-        disk_size = 500
+        disk_size = 167
     test_env = SetupTestEnv(provider=provider, vm_count=vm_count,
                             test_type=constants.VM_DISK, disk_size=disk_size, raid=False,
                             keyid=keyid, secret=secret, token=token,
