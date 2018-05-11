@@ -149,7 +149,7 @@ class AWSConnector:
             log.info("amazon_linux")
         elif os_type == 'amazon_linux_gpu':
             filters={'name':'Deep Learning AMI (Amazon Linux) Version*', 'architecture': 'x86_64','root_device_type':'ebs'}
-            log.info("amazon_linux_gpux")
+            log.info("amazon_linux_gpu")
         else:
             raise
         images = self.vpc_conn.get_all_images(filters=filters)
@@ -352,6 +352,10 @@ class AWSConnector:
                 timeout += 10
             # artificial wait for ssh service up status
             time.sleep(60)
+            log.info("path {}".format(os.path.join(self.localpath, self.key_name + '.pem')))
+            log.info("user {}".format(user)
+            log.info("self.user {}".format(self.user)
+            time.sleep(600)
             client = SSHClient(server=instance.ip_address, host_key_file=self.host_key_file,
                                user=user or self.user,
                                ssh_key_file=os.path.join(self.localpath, self.key_name + '.pem'))
