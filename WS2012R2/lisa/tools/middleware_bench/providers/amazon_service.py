@@ -138,6 +138,7 @@ class AWSConnector:
         self.create_security_group(self.vpc_conn, vpc_id=self.vpc_zone.id)
         self.create_key_pair(self.vpc_conn)
 
+    @staticmethod
     def newest_image(list_of_images):
         latest = None
 
@@ -191,7 +192,7 @@ class AWSConnector:
                 log.info(image.is_public)
                 log.info("***************************end***************************")
         log.info("get all images done")
-        source_image = newest_image(images)
+        source_image = self.newest_image(images)
         log.info(source_image.name)
         log.info(source_image.id)
         log.info(source_image.platform)
