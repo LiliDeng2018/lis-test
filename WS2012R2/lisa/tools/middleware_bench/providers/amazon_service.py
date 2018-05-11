@@ -147,7 +147,7 @@ class AWSConnector:
                 latest = image
                 continue
 
-            if parser.parse(image.creationDate) > parser.parse(latest.creationDate):
+            if parser.parse(image.creationDate.split("T")[0]) > parser.parse(latest.creationDate.split("T")[0]):
                 latest = image
 
         return latest
