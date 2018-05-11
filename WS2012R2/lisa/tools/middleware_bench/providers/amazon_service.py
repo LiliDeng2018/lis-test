@@ -142,12 +142,14 @@ class AWSConnector:
     def newest_image(self, os_type):
         filters = {}
         if os_type == 'ubuntu_1604':
-            filters={'root_device_type':'ebs', 'owner_id':'137112412989'}
+            filters={'name':'ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server*', 'root_device_type':'ebs'}
             log.info("ubuntu_1604")
         elif os_type == 'amazon_linux':
             filters={'name':'amzn-ami-hvm-*-x86_64-gp2', 'architecture': 'x86_64','root_device_type':'ebs', 'owner_id':'137112412989'}
+            log.info("amazon_linux")
         elif os_type == 'amazon_linux_gpu':
             filters={'name':'amzn-ami-hvm-*-x86_64-gp2', 'architecture': 'x86_64','root_device_type':'ebs', 'owner_id':'137112412989'}
+            log.info("amazon_linux_gpux")
         else:
             raise
         images = self.vpc_conn.get_all_images(filters=filters)
