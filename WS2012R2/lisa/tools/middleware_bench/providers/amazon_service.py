@@ -353,8 +353,8 @@ class AWSConnector:
             # artificial wait for ssh service up status
             time.sleep(60)
             log.info("path {}".format(os.path.join(self.localpath, self.key_name + '.pem')))
-            log.info("user {}".format(user)
-            log.info("self.user {}".format(self.user)
+            log.info("user {}".format(user))
+            log.info("self.user {}".format(self.user))
             time.sleep(600)
             client = SSHClient(server=instance.ip_address, host_key_file=self.host_key_file,
                                user=user or self.user,
