@@ -29,6 +29,7 @@ from boto import ec2
 from boto import vpc
 from boto.ec2.blockdevicemapping import BlockDeviceMapping, BlockDeviceType
 from utils.cmdshell import SSHClient
+from dateutil import parser
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s',
                     datefmt='%y/%m/%d %H:%M:%S', level=logging.INFO)
@@ -137,6 +138,19 @@ class AWSConnector:
         self.create_security_group(self.vpc_conn, vpc_id=self.vpc_zone.id)
         self.create_key_pair(self.vpc_conn)
 
+    def newest_image(list_of_images):
+        latest = None
+
+        for image in list_of_images:
+            if not latest:
+                latest = image
+                continue
+
+            if parser.parse(image.creationDate) > parser.parse(latest.creationDate):
+                latest = image
+
+        return latest
+
     def create_vm(self, user_data=None):
         """
         Create a VPC EC2 instance.
@@ -155,7 +169,7 @@ class AWSConnector:
         #hypervisor hvm
         #amzn*/Deep Learning AMI/
         #
-        filters={'name':'amzn-ami-hvm-*-x86_64-gp2', 'architecture': 'x86_64','root_device_type':'ebs'}
+        filters={'name':'amzn-ami-hvm-*-x86_64-gp2', 'architecture': 'x86_64','root_device_type':'ebs', 'owner_id':'137112412989'}
         images = self.vpc_conn.get_all_images(filters=filters)
         for image in images:
             if image.platform != 'windows' and "test" not in image.name:
@@ -177,6 +191,22 @@ class AWSConnector:
                 log.info(image.is_public)
                 log.info("***************************end***************************")
         log.info("get all images done")
+        source_image = newest_image(images)
+        log.info(source_image.name)
+        log.info(source_image.id)
+        log.info(source_image.platform)
+        log.info(source_image.block_device_mapping)
+        log.info(source_image.root_device_type)
+        log.info(image.creationDate)
+        log.info(source_image.hypervisor)
+        log.info(source_image.owner_alias)
+        log.info(source_image.state)
+        log.info(source_image.type)
+        log.info(source_image.virtualization_type)
+        log.info(source_image.sriov_net_support)
+        log.info(source_image.description)
+        log.info(source_image.owner_id)
+        log.info(source_image.is_public)
         time.sleep(10000000000000)
         reservation = self.vpc_conn.run_instances(self.imageid, key_name=self.key_name,
                                                   instance_type=self.instancetype,
