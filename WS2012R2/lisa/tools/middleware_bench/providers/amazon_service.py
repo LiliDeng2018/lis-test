@@ -145,10 +145,10 @@ class AWSConnector:
             filters={'name':'ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server*', 'root_device_type':'ebs'}
             log.info("ubuntu_1604")
         elif os_type == 'amazon_linux':
-            filters={'name':'amzn-ami-hvm-*-x86_64-gp2', 'architecture': 'x86_64','root_device_type':'ebs', 'owner_id':'137112412989'}
+            filters={'name':'amzn-ami-hvm-*-x86_64-gp2', 'architecture': 'x86_64','root_device_type':'ebs'}
             log.info("amazon_linux")
         elif os_type == 'amazon_linux_gpu':
-            filters={'name':'amzn-ami-hvm-*-x86_64-gp2', 'architecture': 'x86_64','root_device_type':'ebs', 'owner_id':'137112412989'}
+            filters={'name':'Deep Learning AMI (Amazon Linux) Version*', 'architecture': 'x86_64','root_device_type':'ebs'}
             log.info("amazon_linux_gpux")
         else:
             raise
@@ -174,7 +174,17 @@ class AWSConnector:
                 latest = image
         log.info("image id {}".format(latest.id))
         log.info("image creationDate {}".format(latest.creationDate))
-        return latest
+        root_device_name = latest.root_device_name
+        device_map = BlockDeviceMapping()
+        if os_type == 'ubuntu_1604':
+            device_map[root_device_name] = BlockDeviceType(delete_on_termination = True, size = 30, volume_type = "gp2")
+        elif os_type == 'amazon_linux':
+            device_map[root_device_name] = BlockDeviceType(delete_on_termination = True, size = 30, volume_type = "gp2")
+        elif os_type == 'amazon_linux_gpu':
+            device_map[root_device_name] = BlockDeviceType(delete_on_termination = True, size = 75, volume_type = "gp2")
+        else:
+            raise
+        return latest, device_map
 
     def create_vm(self, user_data=None):
         """
@@ -183,23 +193,11 @@ class AWSConnector:
         :return: EC2Instance object
         """
         device_map = BlockDeviceMapping()
-        if self.imageid == 'ami-79873901':
-            device_map['/dev/sda1'] = BlockDeviceType(delete_on_termination = True, size = 30, volume_type = "gp2")
-        else:
-            device_map['/dev/xvda'] = BlockDeviceType(delete_on_termination = True, size = 75, volume_type = "gp2")
-        #architecture x86_64
-        #platform None
-        #root_device_type ebs
-        #hypervisor hvm
-        #amzn*/Deep Learning AMI/
-        #
-        #.split(":")[0].split("'")[1]
-        source_image = self.newest_image(self, os_type = self.imageid)
-        self.imageid = source_image.id
-
-        #root_device_name = source_image.block_device_mapping).split(":")[0].split("'")[1]
-        #device_map[root_device_name] = BlockDeviceType(delete_on_termination = True, size = 30, volume_type = "gp2")
-        time.sleep(100000000000000)
+        latest, device_map = self.newest_image(self, os_type = self.imageid)
+        self.imageid = latest.id
+        log.info("Used image id {}".format(self.imageid))
+        log.info("Used image name {}".format(latest.name))
+        log.info("Used image creationDate {}".format(latest.creationDate))
         reservation = self.vpc_conn.run_instances(self.imageid, key_name=self.key_name,
                                                   instance_type=self.instancetype,
                                                   block_device_map = device_map,
