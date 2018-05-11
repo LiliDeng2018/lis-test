@@ -161,6 +161,8 @@ class AWSConnector:
                 log.info("block_device_mapping {}".format(image.block_device_mapping))
                 log.info("hypervisor {}".format(image.hypervisor))
                 log.info("name {}".format(image.name))
+                log.info("owner_id {}".format(image.owner_id))
+                log.info("root_device_name {}".format(image.root_device_name))
         latest = None
 
         for image in filters_images:
