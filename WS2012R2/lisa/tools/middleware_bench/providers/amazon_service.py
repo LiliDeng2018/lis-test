@@ -187,7 +187,7 @@ class AWSConnector:
         #amzn*/Deep Learning AMI/
         #
         #.split(":")[0].split("'")[1]
-        source_image = self.newest_image(self.imageid)
+        source_image = self.newest_image(os_type = self.imageid)
         self.imageid = source_image.id
 
         #root_device_name = source_image.block_device_mapping).split(":")[0].split("'")[1]
