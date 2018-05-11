@@ -172,8 +172,10 @@ class AWSConnector:
         #
         filters={'name':'amzn-ami-hvm-*-x86_64-gp2', 'architecture': 'x86_64','root_device_type':'ebs', 'owner_id':'137112412989'}
         images = self.vpc_conn.get_all_images(filters=filters)
+        filters_images = None
         for image in images:
             if image.platform != 'windows' and "test" not in image.name:
+                filters_images.add(image)
                 log.info("***************************start***************************")
                 log.info(image.name)
                 log.info(image.id)
@@ -192,7 +194,7 @@ class AWSConnector:
                 log.info(image.is_public)
                 log.info("***************************end***************************")
         log.info("get all images done")
-        source_image = self.newest_image(images)
+        source_image = self.newest_image(filters_images)
         log.info(source_image.name)
         log.info(source_image.id)
         log.info(source_image.platform)
