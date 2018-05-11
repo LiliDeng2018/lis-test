@@ -140,14 +140,15 @@ class AWSConnector:
 
     @staticmethod
     def newest_image(list_of_images):
-        latest = list_of_images[0]
+        latest = None
 
         for image in list_of_images:
-            if parser.parse(image.creationDate.split("T")[0]) > parser.parse(latest.creationDate.split("T")[0]):
-                log.info('image: {}'.format(image.creationDate.split("T")[0]))
-                log.info('latest: {}'.format(latest.creationDate.split("T")[0]))
+            if not latest:
                 latest = image
-                log.info('after assign - latest: {}'.format(latest.creationDate.split("T")[0]))
+                continue
+
+            if parser.parse(image.creationDate) > parser.parse(latest.creationDate):
+                latest = image
 
         return latest
 
@@ -199,7 +200,7 @@ class AWSConnector:
         log.info(source_image.platform)
         log.info(source_image.block_device_mapping)
         log.info(source_image.root_device_type)
-        log.info(image.creationDate)
+        log.info(source_image.creationDate)
         log.info(source_image.hypervisor)
         log.info(source_image.owner_alias)
         log.info(source_image.state)
