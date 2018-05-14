@@ -180,6 +180,11 @@ class AWSConnector:
             log.info("device_map amazon_linux_gpu")
         else:
             raise
+        log.info("Used image id {}".format(latest.imageid))
+        log.info("Used image name {}".format(latest.name))
+        log.info("Used image root_device_name {}".format(latest.root_device_name))
+        log.info("Used image block_device_mapping {}".format(latest.block_device_mapping))
+        log.info("Used image ramdisk_id {}".format(latest.ramdisk_id))
         return latest, device_map
 
     def create_vm(self, user_data=None):
