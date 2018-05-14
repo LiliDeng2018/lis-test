@@ -151,7 +151,7 @@ class AWSConnector:
             filters={'name':'Deep Learning AMI (Amazon Linux) Version*', 'architecture': 'x86_64','root_device_type':'ebs'}
             log.info("amazon_linux_gpu")
         else:
-            log.info("device_map not support")
+            log.info("os_type {} not support".format(os_type))
         images = self.vpc_conn.get_all_images(filters=filters)
         filters_images = []
         for image in images:
@@ -170,10 +170,24 @@ class AWSConnector:
                 continue
             if parser.parse(image.creationDate) > parser.parse(latest.creationDate):
                 latest = image
+        return latest
+
+    def create_vm(self, user_data=None):
+        """
+        Create a VPC EC2 instance.
+        :param user_data: routines to be executed upon spawning the instance
+        :return: EC2Instance object
+        """
+        latest = self.newest_image(self, os_type = self.imageid)
+        self.imageid = latest.id
+        log.info("Used image id {}".format(self.imageid))
+        log.info("Used image name {}".format(latest.name))
+        log.info("Used image creationDate {}".format(latest.creationDate))
 
         root_device_name = latest.root_device_name
         device_map = BlockDeviceMapping()
-        log.info("device_map {}".format(device_map))
+        log.info("device_map {}".format(root_device_name))
+
         if os_type == 'ubuntu_1604':
             device_map[root_device_name] = BlockDeviceType(delete_on_termination = True, size = 30, volume_type = "gp2")
             log.info("device_map ubuntu_1604")
@@ -184,21 +198,8 @@ class AWSConnector:
             device_map[root_device_name] = BlockDeviceType(delete_on_termination = True, size = 75, volume_type = "gp2")
             log.info("device_map amazon_linux_gpu")
         else:
-            log.info("device_map not support")
-        return latest, device_map
+            log.info("device_map {} not support".format(os_type))
 
-    def create_vm(self, user_data=None):
-        """
-        Create a VPC EC2 instance.
-        :param user_data: routines to be executed upon spawning the instance
-        :return: EC2Instance object
-        """
-        device_map = None
-        latest, device_map = self.newest_image(self, os_type = self.imageid)
-        self.imageid = latest.id
-        log.info("Used image id {}".format(self.imageid))
-        log.info("Used image name {}".format(latest.name))
-        log.info("Used image creationDate {}".format(latest.creationDate))
         reservation = self.vpc_conn.run_instances(self.imageid, key_name=self.key_name,
                                                   instance_type=self.instancetype,
                                                   block_device_map = device_map,
