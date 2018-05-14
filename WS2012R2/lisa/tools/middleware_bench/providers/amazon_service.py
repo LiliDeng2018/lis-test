@@ -84,6 +84,7 @@ class AWSConnector:
         self.instances = []
         self.ebs_vols = []
         self.latestimage = None
+        self.device_map = BlockDeviceMapping()
 
     def ec2_connect(self, region=None):
         """
@@ -167,6 +168,19 @@ class AWSConnector:
                 continue
             if parser.parse(image.creationDate) > parser.parse(latest.creationDate):
                 latest = image
+        
+        root_device_name = latest.root_device_name
+        if os_type == 'ubuntu_1604':
+            self.device_map[root_device_name] = BlockDeviceType(delete_on_termination = True, size = 30, volume_type = "gp2")
+            log.info("device_map ubuntu_1604")
+        elif os_type == 'amazon_linux':
+            self.device_map[root_device_name] = BlockDeviceType(delete_on_termination = True, size = 30, volume_type = "gp2")
+            log.info("device_map amazon_linux")
+        elif os_type == 'amazon_linux_gpu':
+            self.device_map[root_device_name] = BlockDeviceType(delete_on_termination = True, size = 75, volume_type = "gp2")
+            log.info("device_map amazon_linux_gpu")
+        else:
+            log.info("device_map {} not support".format(os_type))
         return latest
 
     def create_vm(self, user_data=None):
@@ -181,25 +195,9 @@ class AWSConnector:
         log.info("Used image name {}".format(self.latestimage.name))
         log.info("Used image creationDate {}".format(self.latestimage.creationDate))
 
-        root_device_name = self.latestimage.root_device_name
-        device_map = BlockDeviceMapping()
-        log.info("device_map {}".format(root_device_name))
-
-        if os_type == 'ubuntu_1604':
-            device_map[root_device_name] = BlockDeviceType(delete_on_termination = True, size = 30, volume_type = "gp2")
-            log.info("device_map ubuntu_1604")
-        elif os_type == 'amazon_linux':
-            device_map[root_device_name] = BlockDeviceType(delete_on_termination = True, size = 30, volume_type = "gp2")
-            log.info("device_map amazon_linux")
-        elif os_type == 'amazon_linux_gpu':
-            device_map[root_device_name] = BlockDeviceType(delete_on_termination = True, size = 75, volume_type = "gp2")
-            log.info("device_map amazon_linux_gpu")
-        else:
-            log.info("device_map {} not support".format(os_type))
-
         reservation = self.vpc_conn.run_instances(self.imageid, key_name=self.key_name,
                                                   instance_type=self.instancetype,
-                                                  block_device_map = device_map,
+                                                  block_device_map=self.device_map,
                                                   placement=self.zone,
                                                   security_group_ids=[self.security_group.id],
                                                   subnet_id=self.subnet.id, user_data=user_data)
