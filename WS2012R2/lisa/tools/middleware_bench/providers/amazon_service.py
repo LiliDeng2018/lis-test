@@ -161,7 +161,7 @@ class AWSConnector:
                 log.info("Used image state {}".format(image.state))
                 log.info("Used image description {}".format(image.description))
                 log.info("Used image ownerId {}".format(image.ownerId))
-                log.info("Used image product_codes {}".format(image.product_codes))
+                log.info("Used image root_device_name {}".format(image.root_device_name))
 
         latest = None
         for image in filters_images:
