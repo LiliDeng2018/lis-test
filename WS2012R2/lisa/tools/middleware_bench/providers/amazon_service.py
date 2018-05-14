@@ -179,7 +179,7 @@ class AWSConnector:
         :return: EC2Instance object
         """
         os_type = self.imageid
-        latest = self.newest_image(self)
+        latest = self.newest_image(self, os_type)
         self.imageid = latest.id
         log.info("Used image id {}".format(self.imageid))
         log.info("Used image name {}".format(latest.name))
