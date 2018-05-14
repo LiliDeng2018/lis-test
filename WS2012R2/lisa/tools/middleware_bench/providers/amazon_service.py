@@ -157,6 +157,11 @@ class AWSConnector:
         for image in images:
             if image.platform != 'windows' and "test" not in image.name:
                 filters_images.append(image)
+                log.info("Used image name {}".format(image.name))
+                log.info("Used image state {}".format(image.state))
+                log.info("Used image description {}".format(image.description))
+                log.info("Used image ownerId {}".format(image.ownerId))
+                log.info("Used image product_codes {}".format(image.product_codes))
 
         latest = None
         for image in filters_images:
@@ -180,10 +185,6 @@ class AWSConnector:
             log.info("device_map amazon_linux_gpu")
         else:
             raise
-        log.info("Used image name {}".format(latest.name))
-        log.info("Used image root_device_name {}".format(latest.root_device_name))
-        log.info("Used image block_device_mapping {}".format(latest.block_device_mapping))
-        log.info("Used image ramdisk_id {}".format(latest.ramdisk_id))
         return latest, device_map
 
     def create_vm(self, user_data=None):
