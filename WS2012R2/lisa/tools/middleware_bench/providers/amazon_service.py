@@ -177,7 +177,7 @@ class AWSConnector:
         """
         os_type = self.imageid
         self.imageid = self.latestimage.id
-        log.info("Used image id {}".format(self.latestimage.imageid))
+        log.info("Used image id {}".format(self.imageid))
         log.info("Used image name {}".format(self.latestimage.name))
         log.info("Used image creationDate {}".format(self.latestimage.creationDate))
 
