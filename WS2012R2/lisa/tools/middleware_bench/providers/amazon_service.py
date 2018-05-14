@@ -83,6 +83,7 @@ class AWSConnector:
         self.elastic_ips = []
         self.instances = []
         self.ebs_vols = []
+        self.latestimage = None
 
     def ec2_connect(self, region=None):
         """
@@ -137,6 +138,7 @@ class AWSConnector:
         self.vpc_conn.create_route(route_table.id, '0.0.0.0/0', gateway.id)
         self.create_security_group(self.vpc_conn, vpc_id=self.vpc_zone.id)
         self.create_key_pair(self.vpc_conn)
+        self.latestimage = self.newest_image(self.vpc_conn, os_type = self.imageid)
 
     def newest_image(self, conn, os_type = None):
         filters = {}
@@ -157,11 +159,6 @@ class AWSConnector:
         for image in images:
             if image.platform != 'windows' and "test" not in image.name:
                 filters_images.append(image)
-                log.info("Used image name {}".format(image.name))
-                log.info("Used image state {}".format(image.state))
-                log.info("Used image description {}".format(image.description))
-                log.info("Used image ownerId {}".format(image.ownerId))
-                log.info("Used image root_device_name {}".format(image.root_device_name))
 
         latest = None
         for image in filters_images:
@@ -179,13 +176,12 @@ class AWSConnector:
         :return: EC2Instance object
         """
         os_type = self.imageid
-        latest = self.newest_image(conn = self.vpc_conn, os_type = self.imageid)
-        self.imageid = latest.id
-        log.info("Used image id {}".format(self.imageid))
-        log.info("Used image name {}".format(latest.name))
-        log.info("Used image creationDate {}".format(latest.creationDate))
+        self.imageid = self.latestimage.id
+        log.info("Used image id {}".format(self.latestimage.imageid))
+        log.info("Used image name {}".format(self.latestimage.name))
+        log.info("Used image creationDate {}".format(self.latestimage.creationDate))
 
-        root_device_name = latest.root_device_name
+        root_device_name = self.latestimage.root_device_name
         device_map = BlockDeviceMapping()
         log.info("device_map {}".format(root_device_name))
 
