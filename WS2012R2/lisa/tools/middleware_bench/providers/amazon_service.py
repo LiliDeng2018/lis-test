@@ -151,7 +151,7 @@ class AWSConnector:
             filters={'name':'Deep Learning AMI (Amazon Linux) Version*', 'architecture': 'x86_64','root_device_type':'ebs'}
             log.info("amazon_linux_gpu")
         else:
-            raise
+            log.info("device_map not support")
         images = self.vpc_conn.get_all_images(filters=filters)
         filters_images = []
         for image in images:
@@ -184,7 +184,7 @@ class AWSConnector:
             device_map[root_device_name] = BlockDeviceType(delete_on_termination = True, size = 75, volume_type = "gp2")
             log.info("device_map amazon_linux_gpu")
         else:
-            raise
+            log.info("device_map not support")
         return latest, device_map
 
     def create_vm(self, user_data=None):
