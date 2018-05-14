@@ -168,12 +168,16 @@ class AWSConnector:
 
         root_device_name = latest.root_device_name
         device_map = BlockDeviceMapping()
+        log.info("device_map {}".format(device_map))
         if os_type == 'ubuntu_1604':
             device_map[root_device_name] = BlockDeviceType(delete_on_termination = True, size = 30, volume_type = "gp2")
+            log.info("device_map ubuntu_1604")
         elif os_type == 'amazon_linux':
             device_map[root_device_name] = BlockDeviceType(delete_on_termination = True, size = 30, volume_type = "gp2")
+            log.info("device_map amazon_linux")
         elif os_type == 'amazon_linux_gpu':
             device_map[root_device_name] = BlockDeviceType(delete_on_termination = True, size = 75, volume_type = "gp2")
+            log.info("device_map amazon_linux_gpu")
         else:
             raise
         return latest, device_map
@@ -184,7 +188,7 @@ class AWSConnector:
         :param user_data: routines to be executed upon spawning the instance
         :return: EC2Instance object
         """
-        device_map = BlockDeviceMapping()
+        device_map = None
         latest, device_map = self.newest_image(self, os_type = self.imageid)
         self.imageid = latest.id
         log.info("Used image id {}".format(self.imageid))
