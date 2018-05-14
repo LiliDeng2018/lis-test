@@ -151,6 +151,7 @@ class AWSConnector:
             log.info("amazon_linux_gpu")
         else:
             log.info("os_type {} not support".format(os_type))
+            return
         images = conn.get_all_images(filters=filters)
         filters_images = []
         for image in images:
