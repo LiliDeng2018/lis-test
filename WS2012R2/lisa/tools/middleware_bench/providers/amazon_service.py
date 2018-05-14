@@ -138,8 +138,7 @@ class AWSConnector:
         self.create_security_group(self.vpc_conn, vpc_id=self.vpc_zone.id)
         self.create_key_pair(self.vpc_conn)
 
-    @staticmethod
-    def newest_image(self, os_type):
+    def newest_image(self, os_type = None):
         filters = {}
         if os_type == 'ubuntu_1604':
             filters={'name':'ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server*', 'root_device_type':'ebs', 'owner-id':'099720109477'}
