@@ -178,7 +178,8 @@ class AWSConnector:
         :param user_data: routines to be executed upon spawning the instance
         :return: EC2Instance object
         """
-        latest = self.newest_image(self, os_type = self.imageid)
+        os_type = self.imageid
+        latest = self.newest_image(self)
         self.imageid = latest.id
         log.info("Used image id {}".format(self.imageid))
         log.info("Used image name {}".format(latest.name))
