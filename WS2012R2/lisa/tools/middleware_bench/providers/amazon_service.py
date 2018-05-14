@@ -138,7 +138,7 @@ class AWSConnector:
         self.create_security_group(self.vpc_conn, vpc_id=self.vpc_zone.id)
         self.create_key_pair(self.vpc_conn)
 
-    def newest_image(self, os_type = None):
+    def newest_image(conn = None, os_type = None):
         filters = {}
         if os_type == 'ubuntu_1604':
             filters={'name':'ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server*', 'root_device_type':'ebs', 'owner-id':'099720109477'}
@@ -151,7 +151,7 @@ class AWSConnector:
             log.info("amazon_linux_gpu")
         else:
             log.info("os_type {} not support".format(os_type))
-        images = self.vpc_conn.get_all_images(filters=filters)
+        images = conn.get_all_images(filters=filters)
         filters_images = []
         for image in images:
             if image.platform != 'windows' and "test" not in image.name:
@@ -178,7 +178,7 @@ class AWSConnector:
         :return: EC2Instance object
         """
         os_type = self.imageid
-        latest = self.newest_image(self, os_type)
+        latest = self.newest_image(self.vpc_conn, self.imageid)
         self.imageid = latest.id
         log.info("Used image id {}".format(self.imageid))
         log.info("Used image name {}".format(latest.name))
